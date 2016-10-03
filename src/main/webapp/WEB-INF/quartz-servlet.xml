@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans  
+           http://www.springframework.org/schema/beans/spring-beans-3.2.xsd  
+           http://www.springframework.org/schema/aop   
+           http://www.springframework.org/schema/aop/spring-aop-3.2.xsd  
+           http://www.springframework.org/schema/tx  
+           http://www.springframework.org/schema/tx/spring-tx-3.2.xsd  
+           http://www.springframework.org/schema/context  
+           http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<context:component-scan base-package="com.eastng.practise"/>
+
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" >
+		<property name="configLocation" value="classpath:quartz.properties" />
+		<property name="applicationContextSchedulerContextKey"    
+           value="applicationContextKey" />    
+       <property name="autoStartup" value="true" />
+       <property name="startupDelay" value="60" />
+	</bean>
+	
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl">
+			<value>jdbc:mysql://localhost:3306/quartz?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false</value>
+		</property>
+		<property name="user" value="quartz" />
+		<property name="password" value="quartz" />
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!-- 关联数据源 -->
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	
+</beans>
