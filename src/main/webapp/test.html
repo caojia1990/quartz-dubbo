@@ -1,48 +1,150 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Bootstrap 101 Template</title>
+<title>Quartz-Dubbo</title>
 
 <!-- Bootstrap -->
-<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="js/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="js/plugin/bootstrap-table/bootstrap-table.css">
+<link href="dashboard.css" rel="stylesheet">
 
+<script src="js/jquery/jquery.min.js"></script>
+<script src="js/bootstrap/js/bootstrap.min.js"></script>
+<script src="js/plugin/bootstrap-table/bootstrap-table.js"></script>
+<!-- put your locale files after bootstrap-table.js -->
+<script src="js/plugin/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+
+<script type="text/javascript">
+    function operationFormatter(value) {
+        return '<button type="button" class="btn btn-default btn-sm">'
+                 + '<i class="glyphicon glyphicon-flash"></i>'
+             + '</button>'
+             + '<button type="button" class="btn btn-default btn-sm">'
+                 + '<i class="glyphicon glyphicon-play"></i>'
+             + '</button>'
+             + '<button type="button" class="btn btn-default btn-sm">'
+                 + '<i class="glyphicon glyphicon-pause"></i>'
+             + '</button>'
+             + '<button type="button" class="btn btn-default btn-sm">'
+                 + '<i class="glyphicon glyphicon-cog"></i>'
+             + '</button>'
+             + '<button type="button" class="btn btn-default btn-sm">'
+                 + '<i class="glyphicon glyphicon-trash"></i>'
+             + '</button>';
+    }
+    
+    function detailFormatter(index, row) {
+        var html = [];
+        $.each(row, function (key, value) {
+            html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+        });
+        return html.join('');
+    }
+</script>
 </head>
 <body>
 
-	<h2>Hello World!</h2>
-	<button class="btn btn-default">
-		<i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
-	</button>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Project name</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
 
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+            <li><a href="#">所有任务</a></li>
+            <!-- <li><a href="#">Analytics</a></li>
+            <li><a href="#">Export</a></li> -->
+          </ul>
+          <!-- <ul class="nav nav-sidebar">
+            <li><a href="">Nav item</a></li>
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+            <li><a href="">More navigation</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+          </ul> -->
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        
+        
+          <div class="table-responsive">
+            <div id="toolbar" class="btn-group">
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addModal">
+                    <i class="glyphicon glyphicon-plus"></i>
+                </button>
+            </div>
+            <table id="table"
+               data-toggle="table" 
+               data-toolbar="#toolbar"
+               data-search="true"
+               data-show-refresh="true"
+               data-show-toggle="true"
+               data-show-columns="true"
+               data-show-export="true"
+               data-detail-view="true"
+               data-detail-formatter="detailFormatter"
+               data-pagination="true"
+               data-height="542"
+               data-url="getAllJobs">
+              <thead>
+                <tr>
+                    <th data-field="group">项目</th>
+                    <th data-field="name">任务名</th>
+                    <th data-field="description">描述</th>
+                    <th data-field="jobData.interfaceName">接口名</th>
+                    <th data-field="jobData.methodName">方法名</th>
+                    <th data-field="jobData" data-formatter="operationFormatter">操作</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
 
-	<div class="panel panel-default" style="width: 700px;">
-		<!-- Default panel contents -->
-		<div class="panel-heading">Panel heading</div>
-		<div class="panel-body">
-			<p>...</p>
-		</div>
-
-		<!-- Table -->
-		<table class="table">
-			<tr>
-				<td><button class="btn btn-default btn-xs" style="border: 0px;"><i class="glyphicon glyphicon-play" aria-hidden="true"></i></button></td>
-				<td><button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pause" aria-hidden="true"></i></button></td>
-				<td><button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-wrench" aria-hidden="true"></i></button></td>
-				<td><button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></button></td>
-			</tr>
-			<tr>
-				<td><button class="btn btn-default"><i class="glyphicon glyphicon-play" aria-hidden="true"></i></button></td>
-				<td><button class="btn btn-default"><i class="glyphicon glyphicon-pause" aria-hidden="true"></i></button></td>
-				<td><button class="btn btn-default"><i class="glyphicon glyphicon-wrench" aria-hidden="true"></i></button></td>
-				<td><button class="btn btn-default"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></button></td>
-			</tr>
-			<tr>
-				<td><button class="btn btn-default"><i class="glyphicon glyphicon-play" aria-hidden="true"></i></button></td>
-				<td><button class="btn btn-default"><i class="glyphicon glyphicon-pause" aria-hidden="true"></i></button></td>
-				<td><button class="btn btn-default"><i class="glyphicon glyphicon-wrench" aria-hidden="true"></i></button></td>
-				<td><button class="btn btn-default"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></button></td>
-			</tr>
-		</table>
-	</div>
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">创建任务</h4>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
 </body>
 </html>

@@ -13,6 +13,7 @@ import com.eastng.practise.base.BaseJunitTest;
 import com.eastng.practise.bean.DubboBean;
 import com.eastng.practise.bean.JobBean;
 import com.eastng.practise.bean.SimpleJobBean;
+import com.eastng.practise.bean.TriggerBean;
 import com.eastng.practise.quartz.scheduler.JobScheduleService;
 
 public class JobTest extends BaseJunitTest{
@@ -33,7 +34,15 @@ public class JobTest extends BaseJunitTest{
 		System.out.println("------- Initializing ----------------------");
 		
 		SimpleJobBean jobBean = new SimpleJobBean();
-		jobBean.getTriggerBean().setCronExpression("0/20 * * * * ?");
+		
+		TriggerBean triggerBean = new TriggerBean();
+		triggerBean.setCronExpression("0/20 * * * * ?");
+		triggerBean.setDescription("触发器");
+		triggerBean.setPriority(3);
+		triggerBean.setTriggerGroup("第一组");
+		triggerBean.setTriggerName("触发器01");
+		jobBean.setTriggerBean(triggerBean);
+		
 		jobBean.setName("jobname1");
 		jobBean.setGroup("jobGroup1");
 		jobBean.setDescription("test");
@@ -46,8 +55,8 @@ public class JobTest extends BaseJunitTest{
 		dubboBean.setMethodName("sayHello");
 		jobBean.setJobData(dubboBean);
 		
-		//this.jobScheduleService.scheduleJob(jobBean);
-		this.jobScheduleService.modifyJob(jobBean);
+		this.jobScheduleService.scheduleJob(jobBean);
+		//this.jobScheduleService.modifyJob(jobBean);
 	
 	    // wait long enough so that the scheduler as an opportunity to
 	    // run the job!
@@ -59,7 +68,7 @@ public class JobTest extends BaseJunitTest{
 	    } catch (Exception e) {
 	      //
 	    }*/
-	    scheduler.shutdown(true);
+	    //scheduler.shutdown(true);
 	    
 	    logger.info("------------------------调度结束--------------------------");
 	}

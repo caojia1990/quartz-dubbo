@@ -62,11 +62,17 @@
 		  <version>1.2.16</version>
 	 </dependency>
 	 
-<!--      <dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.6.4</version>
+    </dependency>
+    
+    <dependency>
         <groupId>com.alibaba</groupId>
         <artifactId>fastjson</artifactId>
         <version>1.2.16</version>
-    </dependency> -->
+    </dependency>
     
         <dependency>
         <groupId>org.apache.zookeeper</groupId>
@@ -79,13 +85,6 @@
         <version>0.4</version>
     </dependency>
         
-        
-<!--     <dependency>
-        <groupId>com.alibaba</groupId>
-        <artifactId>fastjson</artifactId>
-        <version>1.2.16</version>
-    </dependency>  -->
-
     <dependency>
         <groupId>com.alibaba</groupId>
         <artifactId>dubbo</artifactId>
