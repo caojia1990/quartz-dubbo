@@ -117,7 +117,7 @@ public class JobScheduleService {
     public void addJob(SimpleJobBean jobBean) throws SchedulerException{
         
         JobDetail jobDetail = newJob(CommonJobBean.class).withIdentity(jobBean.getName(), jobBean.getGroup())
-                .storeDurably(true).build();
+                .storeDurably(true).withDescription(jobBean.getDescription()).build();
         
         jobDetail.getJobDataMap().put(CommonJobBean.JOB_DATA_KEY, jobBean.getJobData());
         
@@ -136,13 +136,17 @@ public class JobScheduleService {
         
         JobKey jobKey = new JobKey(jobBean.getName(), jobBean.getGroup());
         JobDetail jobDetail = newJob(CommonJobBean.class).withIdentity(jobKey)
-                .storeDurably(true).build();
+                .storeDurably(true).withDescription(jobBean.getDescription())
+                .build();
         
         logger.info("job已创建，jobId：" + jobDetail.getKey().toString());
         
-        CronTrigger trigger = newTrigger().withIdentity(jobBean.getTriggerBean().getTriggerName(), jobBean.getGroup())
+        TriggerKey triggerKey = new TriggerKey(jobBean.getTriggerBean().getTriggerName(), jobBean.getGroup());
+        
+        CronTrigger trigger = newTrigger().withIdentity(triggerKey)
                 .withSchedule(cronSchedule(jobBean.getTriggerBean().getCronExpression()))
                 .withDescription(jobBean.getTriggerBean().getDescription())
+                .withPriority(jobBean.getTriggerBean().getPriority())
                 .build();
         
         jobDetail.getJobDataMap().put(CommonJobBean.JOB_DATA_KEY, jobBean.getJobData());
@@ -180,15 +184,16 @@ public class JobScheduleService {
         String jobGroup = jobBean.getGroup();
         
         logger.info("------- Scheduling Job  -------------------");
-        JobDetail jobDetail = newJob(CommonJobBean.class).withIdentity(jobName, jobGroup).build();
+        JobDetail jobDetail = newJob(CommonJobBean.class).withIdentity(jobName, jobGroup)
+        		.withDescription(jobBean.getDescription()).build();
         
         logger.info("job已创建，jobId：" + jobDetail.getKey().toString());
         
         CronTrigger trigger = newTrigger().withIdentity(jobBean.getTriggerBean().getTriggerName(), jobGroup)
                 .withSchedule(cronSchedule(jobBean.getTriggerBean().getCronExpression()))
                 .withDescription(jobBean.getTriggerBean().getDescription())
+                .withPriority(jobBean.getTriggerBean().getPriority())
                 .build();
-        
         
         jobDetail.getJobDataMap().put(CommonJobBean.JOB_DATA_KEY, jobBean.getJobData());
         
@@ -200,6 +205,16 @@ public class JobScheduleService {
             this.scheduler.scheduleJob(jobDetail, trigger);
             
         }
+    }
+    
+    /**
+     * 暂停job
+     * @param jobBean
+     * @throws SchedulerException
+     */
+    public void pauseJob(SimpleJobBean jobBean) throws SchedulerException{
+    	JobKey jobKey = new JobKey(jobBean.getName(), jobBean.getGroup());
+    	this.scheduler.pauseJob(jobKey);
     }
     
     
