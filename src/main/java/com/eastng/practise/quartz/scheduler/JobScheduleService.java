@@ -226,6 +226,15 @@ public class JobScheduleService {
     	this.scheduler.pauseJob(jobKey);
     }
     
+    /**
+     * 恢复任务
+     * @param jobBean
+     * @throws SchedulerException
+     */
+    public void resumeJob(SimpleJobBean jobBean) throws SchedulerException{
+    	JobKey jobKey = new JobKey(jobBean.getName(), jobBean.getGroup());
+    	this.scheduler.resumeJob(jobKey);
+    }
     
     /**
      * 删除任务

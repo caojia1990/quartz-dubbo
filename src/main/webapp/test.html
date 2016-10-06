@@ -16,21 +16,43 @@
 
 <script type="text/javascript">
     function operationFormatter(value,row,index) {
-        return '<button type="button" class="btn btn-default btn-sm" title="立即执行">'
-                 + '<i class="glyphicon glyphicon-flash"></i>'
-             + '</button>'
-             + '<button type="button" class="btn btn-default btn-sm" title="启动任务">'
-                 + '<i class="glyphicon glyphicon-play"></i>'
-             + '</button>'
-             + '<button type="button" class="btn btn-default btn-sm" title="暂停任务">'
-                 + '<i class="glyphicon glyphicon-pause"></i>'
-             + '</button>'
-             + '<button type="button" class="btn btn-default btn-sm" title="设置">'
-                 + '<i class="glyphicon glyphicon-cog"></i>'
-             + '</button>'
-             + '<button type="button" class="btn btn-default btn-sm" title="删除任务">'
-                 + '<i class="glyphicon glyphicon-trash"></i>'
-             + '</button>';
+        var html = '<button type="button" id="exe'+index+'" class="btn btn-default btn-sm" title="立即执行">'
+                     + '<i class="glyphicon glyphicon-flash"></i>'
+                 + '</button>'
+                 + '<button type="button" id="play'+index+'" class="btn btn-default btn-sm" title="启动任务">'
+                     + '<i class="glyphicon glyphicon-play"></i>'
+                 + '</button>'
+                 + '<button type="button" id="pause'+index+'" class="btn btn-default btn-sm" title="暂停任务">'
+                     + '<i class="glyphicon glyphicon-pause"></i>'
+                 + '</button>'
+                 + '<button type="button" id="cog'+index+'" class="btn btn-default btn-sm" title="设置">'
+                     + '<i class="glyphicon glyphicon-cog"></i>'
+                 + '</button>'
+                 + '<button type="button" id="trash'+index+'" class="btn btn-default btn-sm" title="删除任务">'
+                     + '<i class="glyphicon glyphicon-trash"></i>'
+                 + '</button>';
+        $("#table").off("click","#exe"+index);
+        $("#table").on("click","#exe"+index,row,function(event){
+            execute(row);
+        });
+        $("#table").off("click","#play"+index);
+        $("#table").on("click","#play"+index,row,function(event){
+            play(row);
+        });
+        $("#table").off("click","#pause"+index);
+        $("#table").on("click","#pause"+index,row,function(event){
+        	pause(row);
+        });
+        $("#table").off("click","#cog"+index);
+        $("#table").on("click","#cog"+index,row,function(event){
+        	config(row);
+        });
+        $("#table").off("click","#trash"+index);
+        $("#table").on("click","#trash"+index,row,function(event){
+        	trash(row);
+        });
+        
+        return html;
     }
     
     function detailFormatter(index, row) {
@@ -58,19 +80,78 @@
         $.ajax({
             type: "POST",
             url: "addJob",
-            contentType: "application/json;charset=UTF-8",//必须有
+            contentType: "application/json;charset=UTF-8",
             data: JSON.stringify(parameter),
             success: function (date, status){
-            	alert(123);
+                alert(123);
                 $('#addModal').modal('hide')
             }
         });
     }
     
-    $(function(){
-    	$("#table").on("click","button",function(){
-            alert(123);
+    function execute(row){
+        confirm("立即执行任务："+row.name+",确定吗？");
+        var parameter = {name: row.name,
+                         group: row.group};
+        $.ajax({
+            type: "POST",
+            url: "triggerJob",
+            //contentType: "application/json;charset=UTF-8",
+            data: parameter,
+            success: function (date, status){
+                
+            }
         });
+    }
+    
+    function play(row){
+    	confirm("恢复任务："+row.name+",确定吗？");
+        var parameter = {name: row.name,
+                         group: row.group};
+        $.ajax({
+            type: "POST",
+            url: "resumeJob",
+            //contentType: "application/json;charset=UTF-8",
+            data: parameter,
+            success: function (date, status){
+                
+            }
+        });
+    }
+    
+    function pause(row){
+        confirm("暂停任务："+row.name+",确定吗？");
+        var parameter = {name: row.name,
+                         group: row.group};
+        $.ajax({
+            type: "POST",
+            url: "pauseJob",
+            //contentType: "application/json;charset=UTF-8",
+            data: parameter,
+            success: function (date, status){
+                
+            }
+        });
+    }
+    
+    function config(row){
+    	$("#name").val(row.name);
+    	$("#group").val(row.group);
+    	$("#description").val(row.description);
+    	if(row.jobData != null){
+	    	$("#address").val(row.jobData.address);
+	    	$("#protocol").val(row.jobData.protocol);
+	    	$("#port").val(row.jobData.port);
+	    	$("#interfaceName").val(row.jobData.interfaceName);
+	    	$("#methodName").val(row.jobData.methodName);
+	    	$("#version").val(row.jobData.version);
+	    	$("#timeout").val(row.jobData.timeout);
+    	}
+    	$("#addModal").modal('show');
+    }
+    
+    $(function(){
+        
     })
     
 </script>

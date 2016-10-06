@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
@@ -42,5 +43,14 @@ public class SchedulerController {
         logger.info("创建任务：" + JSON.toJSONString(jobBean));
         
         this.jobScheduleService.addJob(jobBean);
+    }
+    
+    @RequestMapping(value="triggerJob")
+    @ResponseBody
+    public void triggerJob(@RequestParam(value="name") String name, @RequestParam(value="group") String group) throws SchedulerException{
+    	SimpleJobBean simpleJobBean = new SimpleJobBean();
+    	simpleJobBean.setName(name);
+    	simpleJobBean.setGroup(group);
+    	this.jobScheduleService.triggerJob(simpleJobBean);
     }
 }
