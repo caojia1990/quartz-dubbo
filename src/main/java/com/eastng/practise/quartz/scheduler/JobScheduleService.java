@@ -110,7 +110,7 @@ public class JobScheduleService {
     
     
     /**
-     * 新增任务
+     * 新增或修改任务
      * @param jobBean
      * @throws SchedulerException
      */
@@ -121,7 +121,17 @@ public class JobScheduleService {
         
         jobDetail.getJobDataMap().put(CommonJobBean.JOB_DATA_KEY, jobBean.getJobData());
         
-        this.scheduler.addJob(jobDetail, true);
+        this.scheduler.addJob(jobDetail, jobBean.isReplace());
+    }
+    
+    /**
+     * 立即执行任务
+     * @param jobBean
+     * @throws SchedulerException
+     */
+    public void triggerJob(SimpleJobBean jobBean) throws SchedulerException{
+    	JobKey jobKey = new JobKey(jobBean.getName(), jobBean.getGroup());
+    	this.scheduler.triggerJob(jobKey);
     }
     
     /**
@@ -150,7 +160,6 @@ public class JobScheduleService {
                 .build();
         
         jobDetail.getJobDataMap().put(CommonJobBean.JOB_DATA_KEY, jobBean.getJobData());
-        
         
         this.scheduler.scheduleJob(jobDetail, trigger);
         

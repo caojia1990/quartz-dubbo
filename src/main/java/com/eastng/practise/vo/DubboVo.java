@@ -1,15 +1,8 @@
-package com.eastng.practise.bean;
+package com.eastng.practise.vo;
 
-import java.io.Serializable;
+public class DubboVo {
 
-public class DubboBean implements Serializable{
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4891881577454086894L;
-    
-    private String address;
+	private String address;
     
     private Integer port;
     
@@ -37,6 +30,14 @@ public class DubboBean implements Serializable{
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
 
     public String getInterfaceName() {
@@ -70,15 +71,6 @@ public class DubboBean implements Serializable{
     public void setParameterValue(String parameterValue) {
         this.parameterValue = parameterValue;
     }
-
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
     
     
-
 }

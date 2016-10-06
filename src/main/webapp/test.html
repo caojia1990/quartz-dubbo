@@ -15,20 +15,20 @@
 <script src="js/plugin/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
 
 <script type="text/javascript">
-    function operationFormatter(value) {
-        return '<button type="button" class="btn btn-default btn-sm">'
+    function operationFormatter(value,row,index) {
+        return '<button type="button" class="btn btn-default btn-sm" title="立即执行">'
                  + '<i class="glyphicon glyphicon-flash"></i>'
              + '</button>'
-             + '<button type="button" class="btn btn-default btn-sm">'
+             + '<button type="button" class="btn btn-default btn-sm" title="启动任务">'
                  + '<i class="glyphicon glyphicon-play"></i>'
              + '</button>'
-             + '<button type="button" class="btn btn-default btn-sm">'
+             + '<button type="button" class="btn btn-default btn-sm" title="暂停任务">'
                  + '<i class="glyphicon glyphicon-pause"></i>'
              + '</button>'
-             + '<button type="button" class="btn btn-default btn-sm">'
+             + '<button type="button" class="btn btn-default btn-sm" title="设置">'
                  + '<i class="glyphicon glyphicon-cog"></i>'
              + '</button>'
-             + '<button type="button" class="btn btn-default btn-sm">'
+             + '<button type="button" class="btn btn-default btn-sm" title="删除任务">'
                  + '<i class="glyphicon glyphicon-trash"></i>'
              + '</button>';
     }
@@ -40,6 +40,39 @@
         });
         return html.join('');
     }
+    
+    /* 创建任务 */
+    function savejob(){
+        var parameter = {name: $("#name").val(),
+                         group: $("#group").val(),
+                         description: $("#description").val(),
+                         jobData: {protocol: $("#protocol").val(),
+                                   address: $("#address").val(),
+                                   port: $("#port").val(),
+                                   interfaceName: $("#interfaceName").val(),
+                                   methodName: $("#methodName").val(),
+                                   version: $("#version").val(),
+                                   timeout: $("#timeout").val()
+                                  }
+                    };
+        $.ajax({
+            type: "POST",
+            url: "addJob",
+            contentType: "application/json;charset=UTF-8",//必须有
+            data: JSON.stringify(parameter),
+            success: function (date, status){
+            	alert(123);
+                $('#addModal').modal('hide')
+            }
+        });
+    }
+    
+    $(function(){
+    	$("#table").on("click","button",function(){
+            alert(123);
+        });
+    })
+    
 </script>
 </head>
 <body>
@@ -96,7 +129,7 @@
         
           <div class="table-responsive">
             <div id="toolbar" class="btn-group">
-                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addModal">
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addModal" title="创建任务">
                     <i class="glyphicon glyphicon-plus"></i>
                 </button>
             </div>
@@ -139,13 +172,13 @@
           <div class="modal-body">
               <form class="form-horizontal" role="form">
                   <div class="form-group">
-                    <label for="jobName" class="col-sm-2 control-label">任务名称</label>
+                    <label for="name" class="col-sm-2 control-label">任务名称</label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="jobName" placeholder="任务名称">
+                      <input type="text" class="form-control" id="name" placeholder="任务名称">
                     </div>
-                    <label for="groupName" class="col-sm-2 control-label">项目名称</label>
+                    <label for="group" class="col-sm-2 control-label">项目名称</label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="groupName" placeholder="项目名称">
+                      <input type="text" class="form-control" id="group" placeholder="项目名称">
                     </div>
                   </div>
                   <div class="form-group">
@@ -165,9 +198,9 @@
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="regeditAddress" class="col-sm-2 control-label">服务注册ip</label>
+                    <label for="address" class="col-sm-2 control-label">服务注册ip</label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="regeditAddress" placeholder="服务注册ip">
+                      <input type="text" class="form-control" id="address" placeholder="服务注册ip">
                     </div>
                     <label for="port" class="col-sm-2 control-label">端口</label>
                     <div class="col-sm-4">
@@ -175,15 +208,15 @@
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="interface" class="col-sm-2 control-label">接口全限定名</label>
+                    <label for="interfaceName" class="col-sm-2 control-label">接口全限定名</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="interface" placeholder="例：com.exaple.package.interface">
+                      <input type="text" class="form-control" id="interfaceName" placeholder="例：com.example.package.interface">
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="method" class="col-sm-2 control-label">方法名</label>
+                    <label for="methodName" class="col-sm-2 control-label">方法名</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="method" placeholder="例：sayhello">
+                      <input type="text" class="form-control" id="methodName" placeholder="例：sayhello">
                     </div>
                   </div>
                   <div class="form-group">
@@ -201,7 +234,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-primary" onclick="savejob()">Save</button>
           </div>
         </div>
       </div>
