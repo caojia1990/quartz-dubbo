@@ -94,7 +94,7 @@ public class JobTest extends BaseJunitTest{
 	
 	@Test
 	public void removeJob() throws SchedulerException{
-		JobBean jobBean = new JobBean();
+		SimpleJobBean jobBean = new SimpleJobBean();
 		jobBean.setName("name1");
 		jobBean.setGroup("group1");
 		this.jobScheduleService.removeJob(jobBean);

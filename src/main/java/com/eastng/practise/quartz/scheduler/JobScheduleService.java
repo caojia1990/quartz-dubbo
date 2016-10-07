@@ -241,7 +241,7 @@ public class JobScheduleService {
      * @param jobBean
      * @throws SchedulerException
      */
-    public void removeJob(JobBean jobBean) throws SchedulerException{
+    public void removeJob(SimpleJobBean jobBean) throws SchedulerException{
         
         this.scheduler.deleteJob(new JobKey(jobBean.getName(), jobBean.getGroup()));
         logger.info("remove job finish!");

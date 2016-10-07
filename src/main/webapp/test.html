@@ -60,6 +60,7 @@
         $.each(row, function (key, value) {
             html.push('<p><b>' + key + ':</b> ' + value + '</p>');
         });
+        alert(html.join(''));
         return html.join('');
     }
     
@@ -83,71 +84,117 @@
             contentType: "application/json;charset=UTF-8",
             data: JSON.stringify(parameter),
             success: function (date, status){
-                alert(123);
                 $('#addModal').modal('hide')
+            	$("#table").bootstrapTable('refresh');
             }
         });
+    }
+    
+    function modifyJob(){
+        var parameter = {name: $("#edit-name").val(),
+                group: $("#edit-group").val(),
+                description: $("#edit-description").val(),
+                replace: true,
+                jobData: {protocol: $("#edit-protocol").val(),
+                          address: $("#edit-address").val(),
+                          port: $("#edit-port").val(),
+                          interfaceName: $("#edit-interfaceName").val(),
+                          methodName: $("#edit-methodName").val(),
+                          version: $("#edit-version").val(),
+                          timeout: $("#edit-timeout").val()
+                         }
+           };
+		$.ajax({
+		   type: "POST",
+		   url: "addJob",
+		   contentType: "application/json;charset=UTF-8",
+		   data: JSON.stringify(parameter),
+		   success: function (date, status){
+		       $('#editModal').modal('hide')
+		       $("#table").bootstrapTable('refresh');
+		   }
+		});
     }
     
     function execute(row){
-        confirm("立即执行任务："+row.name+",确定吗？");
-        var parameter = {name: row.name,
-                         group: row.group};
-        $.ajax({
-            type: "POST",
-            url: "triggerJob",
-            //contentType: "application/json;charset=UTF-8",
-            data: parameter,
-            success: function (date, status){
-                
-            }
-        });
+        if(confirm("立即执行任务："+row.name+",确定吗？")){
+            var parameter = {name: row.name,
+                    group: row.group};
+		   $.ajax({
+		       type: "POST",
+		       url: "triggerJob",
+		       //contentType: "application/json;charset=UTF-8",
+		       data: parameter,
+		       success: function (date, status){
+		           
+		       }
+		   });
+        }
+
     }
     
     function play(row){
-    	confirm("恢复任务："+row.name+",确定吗？");
-        var parameter = {name: row.name,
-                         group: row.group};
-        $.ajax({
-            type: "POST",
-            url: "resumeJob",
-            //contentType: "application/json;charset=UTF-8",
-            data: parameter,
-            success: function (date, status){
-                
-            }
-        });
+    	if(confirm("恢复任务："+row.name+",确定吗？")){
+	        var parameter = {name: row.name,
+	                         group: row.group};
+	        $.ajax({
+	            type: "POST",
+	            url: "resumeJob",
+	            //contentType: "application/json;charset=UTF-8",
+	            data: parameter,
+	            success: function (date, status){
+	                
+	            }
+	        });
+    	}
     }
     
     function pause(row){
-        confirm("暂停任务："+row.name+",确定吗？");
-        var parameter = {name: row.name,
-                         group: row.group};
-        $.ajax({
-            type: "POST",
-            url: "pauseJob",
-            //contentType: "application/json;charset=UTF-8",
-            data: parameter,
-            success: function (date, status){
-                
-            }
-        });
+        if(confirm("暂停任务："+row.name+",确定吗？")){
+	        var parameter = {name: row.name,
+	                         group: row.group};
+	        $.ajax({
+	            type: "POST",
+	            url: "pauseJob",
+	            //contentType: "application/json;charset=UTF-8",
+	            data: parameter,
+	            success: function (date, status){
+	                
+	            }
+	        });
+        }
+    }
+    
+    function trash(row){
+        if(confirm("删除任务："+row.name+",确定吗？")){
+	        var parameter = {name: row.name,
+	                         group: row.group};
+	        $.ajax({
+	            type: "POST",
+	            url: "removeJob",
+	            //contentType: "application/json;charset=UTF-8",
+	            data: parameter,
+	            success: function (date, status){
+	            	$("#table").bootstrapTable('refresh');
+	            }
+	        });
+        }
     }
     
     function config(row){
-    	$("#name").val(row.name);
-    	$("#group").val(row.group);
-    	$("#description").val(row.description);
+    	$("#edit-name").val(row.name);
+    	$("#edit-group").val(row.group);
+    	$("#edit-description").val(row.description);
     	if(row.jobData != null){
-	    	$("#address").val(row.jobData.address);
-	    	$("#protocol").val(row.jobData.protocol);
-	    	$("#port").val(row.jobData.port);
-	    	$("#interfaceName").val(row.jobData.interfaceName);
-	    	$("#methodName").val(row.jobData.methodName);
-	    	$("#version").val(row.jobData.version);
-	    	$("#timeout").val(row.jobData.timeout);
+	    	$("#edit-address").val(row.jobData.address);
+	    	$("#edit-protocol").val(row.jobData.protocol);
+	    	$("#edit-port").val(row.jobData.port);
+	    	$("#edit-interfaceName").val(row.jobData.interfaceName);
+	    	$("#edit-methodName").val(row.jobData.methodName);
+	    	$("#edit-version").val(row.jobData.version);
+	    	$("#edit-timeout").val(row.jobData.timeout);
     	}
-    	$("#addModal").modal('show');
+    	$("#editModal").modal('show');
     }
     
     $(function(){
@@ -242,7 +289,7 @@
         </div>
       </div>
     </div>
-
+    <!-- 创建任务 -->
     <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -255,17 +302,17 @@
                   <div class="form-group">
                     <label for="name" class="col-sm-2 control-label">任务名称</label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="name" placeholder="任务名称">
+                      <input type="text" class="form-control" id="name" placeholder="">
                     </div>
                     <label for="group" class="col-sm-2 control-label">项目名称</label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="group" placeholder="项目名称">
+                      <input type="text" class="form-control" id="group" placeholder="">
                     </div>
                   </div>
                   <div class="form-group">
                     <label for="description" class="col-sm-2 control-label">功能描述</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="description" placeholder="功能描述">
+                      <input type="text" class="form-control" id="description" placeholder="">
                     </div>
                   </div>
                   <hr>
@@ -316,6 +363,84 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-primary" onclick="savejob()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 修改任务 -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">修改任务</h4>
+          </div>
+          <div class="modal-body">
+              <form class="form-horizontal" role="form">
+                  <div class="form-group">
+                    <label for="edit-name" class="col-sm-2 control-label">任务名称</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="edit-name" placeholder="" readonly>
+                    </div>
+                    <label for="edit-group" class="col-sm-2 control-label">项目名称</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="edit-group" placeholder="" readonly>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-description" class="col-sm-2 control-label">功能描述</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="edit-description" placeholder="">
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label for="edit-protocol" class="col-sm-2 control-label">调用方式</label>
+                    <div class="col-sm-10">
+                      <select class="form-control" id="edit-protocol" >
+                        <option value="zookeeper">zookeeper注册</option>
+                        <option value="dubbo">dubbo直连</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-address" class="col-sm-2 control-label">服务注册ip</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="edit-address" placeholder="服务注册ip">
+                    </div>
+                    <label for="edit-port" class="col-sm-2 control-label">端口</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="edit-port" placeholder="端口">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-interfaceName" class="col-sm-2 control-label">接口全限定名</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="edit-interfaceName" placeholder="例：com.example.package.interface">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-methodName" class="col-sm-2 control-label">方法名</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="edit-methodName" placeholder="例：sayhello">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-version" class="col-sm-2 control-label">版本</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="edit-version" placeholder="">
+                    </div>
+                    <label for="edit-timeout" class="col-sm-2 control-label">超时时间</label>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="edit-timeout" placeholder="单位：秒（默认30秒）">
+                    </div>
+                  </div>
+                </form>
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="modifyJob()">Save Change</button>
           </div>
         </div>
       </div>

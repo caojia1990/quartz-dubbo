@@ -8,6 +8,8 @@ public class JobVo {
     
     private String description;
     
+    private boolean replace;
+    
     private DubboVo jobData;
 
     public String getName() {
@@ -34,7 +36,15 @@ public class JobVo {
         this.description = description;
     }
 
-	public DubboVo getJobData() {
+	public boolean isReplace() {
+        return replace;
+    }
+
+    public void setReplace(boolean replace) {
+        this.replace = replace;
+    }
+
+    public DubboVo getJobData() {
 		return jobData;
 	}
 
