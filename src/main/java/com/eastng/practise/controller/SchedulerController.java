@@ -16,7 +16,9 @@ import com.alibaba.fastjson.JSON;
 import com.eastng.practise.bean.DubboBean;
 import com.eastng.practise.bean.JobBean;
 import com.eastng.practise.bean.SimpleJobBean;
+import com.eastng.practise.bean.SimpleTriggerBean;
 import com.eastng.practise.quartz.scheduler.JobScheduleService;
+import com.eastng.practise.vo.AddTriggerParamVo;
 import com.eastng.practise.vo.DubboVo;
 import com.eastng.practise.vo.JobVo;
 
@@ -86,5 +88,14 @@ public class SchedulerController {
         simpleJobBean.setName(name);
         simpleJobBean.setGroup(group);
         this.jobScheduleService.removeJob(simpleJobBean);
+    }
+    
+    @RequestMapping(value="addTrigger")
+    @ResponseBody
+    public void addTrigger(@RequestBody AddTriggerParamVo paramVo) throws SchedulerException{
+    	logger.info("添加触发器入参"+JSON.toJSONString(paramVo));
+    	SimpleTriggerBean simpleTriggerBean = new SimpleTriggerBean();
+    	BeanUtils.copyProperties(paramVo, simpleTriggerBean);
+    	this.jobScheduleService.scheduleJob(simpleTriggerBean);
     }
 }

@@ -25,6 +25,9 @@
                  + '<button type="button" id="pause'+index+'" class="btn btn-default btn-sm" title="暂停任务">'
                      + '<i class="glyphicon glyphicon-pause"></i>'
                  + '</button>'
+                 + '<button type="button" id="time'+index+'" class="btn btn-default btn-sm" title="添加触发器">'
+                     + '<i class="glyphicon glyphicon-time"></i>'
+                 + '</button>'
                  + '<button type="button" id="cog'+index+'" class="btn btn-default btn-sm" title="设置">'
                      + '<i class="glyphicon glyphicon-cog"></i>'
                  + '</button>'
@@ -41,27 +44,54 @@
         });
         $("#table").off("click","#pause"+index);
         $("#table").on("click","#pause"+index,row,function(event){
-        	pause(row);
+            pause(row);
         });
         $("#table").off("click","#cog"+index);
         $("#table").on("click","#cog"+index,row,function(event){
-        	config(row);
+            config(row);
         });
         $("#table").off("click","#trash"+index);
         $("#table").on("click","#trash"+index,row,function(event){
-        	trash(row);
+            trash(row);
         });
-        
+        $("#table").off("click","#time"+index);
+        $("#table").on("click","#time"+index,row,function(event){
+            time(row);
+        });
         return html;
     }
+    /* 触发器栏操作按钮 */
+    function triggerOptFormatter(value,row,index){
+    	
+    }
     
-    function detailFormatter(index, row) {
-        var html = [];
+    function detailFormatter(index, row,$detail) {
+        /* var html = [];
         $.each(row, function (key, value) {
             html.push('<p><b>' + key + ':</b> ' + value + '</p>');
         });
         alert(html.join(''));
-        return html.join('');
+        return html.join(''); */
+        
+        var tableHtml = '<table id="sonTable">'
+                           +'<thead>'
+                            +'<tr>'
+                               +'<th data-field="triggerName">触发器名</th>'
+                               +'<th data-field="priority">优先级</th>'
+                               +'<th data-field="cronExpression">cron表达式</th>'
+                               +'<th data-field="description">描述</th>'
+                               +'<th data-field="state">状态</th>'
+                               +'<th data-field="previousFireTime">上次触发时间</th>'
+                               +'<th data-field="nextFireTime">下次触发时间</th>'
+                               +'<th data-field="jobData" data-formatter="triggerOptFormatter">操作</th>'
+                            +'</tr>'
+                          +'</thead>'
+                       +'</table>'
+        
+        var cur_table = $detail.html(tableHtml).find('table');
+        $(cur_table).bootstrapTable({
+            data: row.triggerBeans
+        })
     }
     
     /* 创建任务 */
@@ -85,9 +115,30 @@
             data: JSON.stringify(parameter),
             success: function (date, status){
                 $('#addModal').modal('hide')
-            	$("#table").bootstrapTable('refresh');
+                $("#table").bootstrapTable('refresh');
             }
         });
+    }
+    
+    /* 添加触发器 */
+    function addTrigger(){
+        var parameter = {jobName: $("#job-name").val(),
+                jobGroup: $("#job-group").val(),
+                triggerName: $("#trigger-name").val(),
+                priority: $("#trigger-priority").val(),
+                cronExpression: $("#trigger-cronExpression").val(),
+                description: $("#trigger-description").val()
+           };
+        $.ajax({
+           type: "POST",
+           url: "addTrigger",
+           contentType: "application/json;charset=UTF-8",
+           data: JSON.stringify(parameter),
+           success: function (date, status){
+               $('#triggerModal').modal('hide')
+               $("#table").bootstrapTable('refresh');
+           }
+        });    
     }
     
     function modifyJob(){
@@ -104,97 +155,103 @@
                           timeout: $("#edit-timeout").val()
                          }
            };
-		$.ajax({
-		   type: "POST",
-		   url: "addJob",
-		   contentType: "application/json;charset=UTF-8",
-		   data: JSON.stringify(parameter),
-		   success: function (date, status){
-		       $('#editModal').modal('hide')
-		       $("#table").bootstrapTable('refresh');
-		   }
-		});
+        $.ajax({
+           type: "POST",
+           url: "addJob",
+           contentType: "application/json;charset=UTF-8",
+           data: JSON.stringify(parameter),
+           success: function (date, status){
+               $('#editModal').modal('hide')
+               $("#table").bootstrapTable('refresh');
+           }
+        });
     }
-    
+    /* 立即执行任务 */
     function execute(row){
         if(confirm("立即执行任务："+row.name+",确定吗？")){
             var parameter = {name: row.name,
                     group: row.group};
-		   $.ajax({
-		       type: "POST",
-		       url: "triggerJob",
-		       //contentType: "application/json;charset=UTF-8",
-		       data: parameter,
-		       success: function (date, status){
-		           
-		       }
-		   });
+           $.ajax({
+               type: "POST",
+               url: "triggerJob",
+               //contentType: "application/json;charset=UTF-8",
+               data: parameter,
+               success: function (date, status){
+                   
+               }
+           });
         }
 
     }
-    
+    /* 恢复任务 */
     function play(row){
-    	if(confirm("恢复任务："+row.name+",确定吗？")){
-	        var parameter = {name: row.name,
-	                         group: row.group};
-	        $.ajax({
-	            type: "POST",
-	            url: "resumeJob",
-	            //contentType: "application/json;charset=UTF-8",
-	            data: parameter,
-	            success: function (date, status){
-	                
-	            }
-	        });
-    	}
+        if(confirm("恢复任务："+row.name+",确定吗？")){
+            var parameter = {name: row.name,
+                             group: row.group};
+            $.ajax({
+                type: "POST",
+                url: "resumeJob",
+                //contentType: "application/json;charset=UTF-8",
+                data: parameter,
+                success: function (date, status){
+                    
+                }
+            });
+        }
     }
-    
+    /* 暂停任务 */
     function pause(row){
         if(confirm("暂停任务："+row.name+",确定吗？")){
-	        var parameter = {name: row.name,
-	                         group: row.group};
-	        $.ajax({
-	            type: "POST",
-	            url: "pauseJob",
-	            //contentType: "application/json;charset=UTF-8",
-	            data: parameter,
-	            success: function (date, status){
-	                
-	            }
-	        });
+            var parameter = {name: row.name,
+                             group: row.group};
+            $.ajax({
+                type: "POST",
+                url: "pauseJob",
+                //contentType: "application/json;charset=UTF-8",
+                data: parameter,
+                success: function (date, status){
+                    
+                }
+            });
         }
     }
-    
+    /* 删除任务 */
     function trash(row){
         if(confirm("删除任务："+row.name+",确定吗？")){
-	        var parameter = {name: row.name,
-	                         group: row.group};
-	        $.ajax({
-	            type: "POST",
-	            url: "removeJob",
-	            //contentType: "application/json;charset=UTF-8",
-	            data: parameter,
-	            success: function (date, status){
-	            	$("#table").bootstrapTable('refresh');
-	            }
-	        });
+            var parameter = {name: row.name,
+                             group: row.group};
+            $.ajax({
+                type: "POST",
+                url: "removeJob",
+                //contentType: "application/json;charset=UTF-8",
+                data: parameter,
+                success: function (date, status){
+                    $("#table").bootstrapTable('refresh');
+                }
+            });
         }
     }
-    
+    /* 修改任务 */
     function config(row){
-    	$("#edit-name").val(row.name);
-    	$("#edit-group").val(row.group);
-    	$("#edit-description").val(row.description);
-    	if(row.jobData != null){
-	    	$("#edit-address").val(row.jobData.address);
-	    	$("#edit-protocol").val(row.jobData.protocol);
-	    	$("#edit-port").val(row.jobData.port);
-	    	$("#edit-interfaceName").val(row.jobData.interfaceName);
-	    	$("#edit-methodName").val(row.jobData.methodName);
-	    	$("#edit-version").val(row.jobData.version);
-	    	$("#edit-timeout").val(row.jobData.timeout);
-    	}
-    	$("#editModal").modal('show');
+        $("#edit-name").val(row.name);
+        $("#edit-group").val(row.group);
+        $("#edit-description").val(row.description);
+        if(row.jobData != null){
+            $("#edit-address").val(row.jobData.address);
+            $("#edit-protocol").val(row.jobData.protocol);
+            $("#edit-port").val(row.jobData.port);
+            $("#edit-interfaceName").val(row.jobData.interfaceName);
+            $("#edit-methodName").val(row.jobData.methodName);
+            $("#edit-version").val(row.jobData.version);
+            $("#edit-timeout").val(row.jobData.timeout);
+        }
+        $("#editModal").modal('show');
+    }
+    
+    function time(row){
+        $("#job-name").val(row.name);
+        $("#job-group").val(row.group);
+        $("#triggerModal").modal('show');
     }
     
     $(function(){
@@ -441,6 +498,48 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-primary" onclick="modifyJob()">Save Change</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 添加触发器 -->
+    <div class="modal fade bs-example-modal-sm" id="triggerModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="mySmallModalLabel">添加触发器</h4>
+          </div>
+          <div class="modal-body">
+              <form class="form-horizontal" role="form">
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                        <input type="hidden" class="form-control" id="job-name" >
+                        <input type="hidden" class="form-control" id="job-group" >
+                        <input type="text" class="form-control" id="trigger-name" placeholder="触发器名" >
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <input type="text" class="form-control" id="trigger-cronExpression" placeholder="cron表达式" >
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <input type="text" class="form-control" id="trigger-priority" placeholder="优先级" >
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <input type="text" class="form-control" id="trigger-description" placeholder="描述" >
+                    </div>
+                  </div>
+              </form>
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="addTrigger()">Save</button>
           </div>
         </div>
       </div>
