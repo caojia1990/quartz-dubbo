@@ -98,4 +98,12 @@ public class SchedulerController {
     	BeanUtils.copyProperties(paramVo, simpleTriggerBean);
     	this.jobScheduleService.scheduleJob(simpleTriggerBean);
     }
+    
+    @RequestMapping(value="removeTrigger")
+    @ResponseBody
+    public void removeTrigger(@RequestParam(value="triggerName") String triggerName, 
+    		@RequestParam(value="triggerGroup") String triggerGroup) throws SchedulerException{
+    	this.jobScheduleService.removeTrigger(triggerName, triggerGroup);
+    	
+    }
 }

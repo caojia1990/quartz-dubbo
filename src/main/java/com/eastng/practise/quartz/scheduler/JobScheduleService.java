@@ -174,10 +174,9 @@ public class JobScheduleService {
     public void scheduleJob(SimpleTriggerBean bean) throws SchedulerException{
         CronTrigger trigger = newTrigger().withIdentity(bean.getTriggerName(), bean.getJobGroup())
                 .withSchedule(cronSchedule(bean.getCronExpression()))
-                .withDescription(bean.getDescription())
+                .withDescription(bean.getDescription()).withPriority(bean.getPriority())
                 .forJob(bean.getJobName(), bean.getJobGroup())
                 .build();
-        
         this.scheduler.scheduleJob(trigger);
     }
     
@@ -260,6 +259,7 @@ public class JobScheduleService {
         
         CronTrigger newTrigger = newTrigger().withIdentity(oldTriggerKey)
                 .withSchedule(cronSchedule(bean.getCronExpression()))
+                .withDescription(bean.getDescription()).withPriority(bean.getPriority())
                 .forJob(jobKey).build();
         
         this.scheduler.rescheduleJob(oldTriggerKey, newTrigger);

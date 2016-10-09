@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.quartz.Trigger.TriggerState;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class TriggerBean {
 
     private String triggerName;
@@ -63,6 +65,7 @@ public class TriggerBean {
         this.description = description;
     }
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     public Date getNextFireTime() {
         return nextFireTime;
     }
@@ -71,6 +74,7 @@ public class TriggerBean {
         this.nextFireTime = nextFireTime;
     }
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     public Date getPreviousFireTime() {
         return previousFireTime;
     }

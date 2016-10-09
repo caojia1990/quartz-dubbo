@@ -62,7 +62,21 @@
     }
     /* 触发器栏操作按钮 */
     function triggerOptFormatter(value,row,index){
-    	
+    	var html = '<button type="button" id="triggeer-cog'+index+'" class="btn btn-default btn-sm" title="修改">'
+			        + '<i class="glyphicon glyphicon-cog"></i>'
+		         + '</button>'
+		         + '<button type="button" id="triggeer-trash'+index+'" class="btn btn-default btn-sm" title="删除触发器">'
+		            + '<i class="glyphicon glyphicon-trash"></i>'
+		         + '</button>';
+    	$("#table").off("click","#triggeer-cog"+index);
+        $("#table").on("click","#triggeer-trash"+index,row,function(event){
+        	triggeerCog(row);
+        });
+        $("#table").off("click","#triggeer-trash"+index);
+        $("#table").on("click","#triggeer-trash"+index,row,function(event){
+        	triggeerTrash(row);
+        });
+        return html;
     }
     
     function detailFormatter(index, row,$detail) {
@@ -89,6 +103,11 @@
                        +'</table>'
         
         var cur_table = $detail.html(tableHtml).find('table');
+                       
+        $.map(row.triggerBeans,function(item){
+            return item.jobName = row.jobName
+        })
+        
         $(cur_table).bootstrapTable({
             data: row.triggerBeans
         })
@@ -252,6 +271,22 @@
         $("#job-name").val(row.name);
         $("#job-group").val(row.group);
         $("#triggerModal").modal('show');
+    }
+    
+    function triggeerTrash(row){
+    	if(confirm("删除触发器："+row.triggerName+",确定吗？")){
+            var parameter = {triggerName: row.triggerName,
+            		         triggerGroup: row.triggerGroup};
+            $.ajax({
+                type: "POST",
+                url: "removeTrigger",
+                //contentType: "application/json;charset=UTF-8",
+                data: parameter,
+                success: function (date, status){
+                    $("#table").bootstrapTable('refresh');
+                }
+            });
+        }
     }
     
     $(function(){
