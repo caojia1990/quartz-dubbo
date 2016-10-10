@@ -18,7 +18,7 @@ import com.eastng.practise.bean.JobBean;
 import com.eastng.practise.bean.SimpleJobBean;
 import com.eastng.practise.bean.SimpleTriggerBean;
 import com.eastng.practise.quartz.scheduler.JobScheduleService;
-import com.eastng.practise.vo.AddTriggerParamVo;
+import com.eastng.practise.vo.TriggerParamVo;
 import com.eastng.practise.vo.DubboVo;
 import com.eastng.practise.vo.JobVo;
 
@@ -92,11 +92,20 @@ public class SchedulerController {
     
     @RequestMapping(value="addTrigger")
     @ResponseBody
-    public void addTrigger(@RequestBody AddTriggerParamVo paramVo) throws SchedulerException{
+    public void addTrigger(@RequestBody TriggerParamVo paramVo) throws SchedulerException{
     	logger.info("添加触发器入参"+JSON.toJSONString(paramVo));
     	SimpleTriggerBean simpleTriggerBean = new SimpleTriggerBean();
     	BeanUtils.copyProperties(paramVo, simpleTriggerBean);
     	this.jobScheduleService.scheduleJob(simpleTriggerBean);
+    }
+    
+    @RequestMapping(value="rescheduleJob")
+    @ResponseBody
+    public void rescheduleJob(@RequestBody TriggerParamVo paramVo) throws SchedulerException{
+    	logger.info("修改触发器入参"+JSON.toJSONString(paramVo));
+    	SimpleTriggerBean simpleTriggerBean = new SimpleTriggerBean();
+    	BeanUtils.copyProperties(paramVo, simpleTriggerBean);
+    	this.jobScheduleService.rescheduleJob(simpleTriggerBean);
     }
     
     @RequestMapping(value="removeTrigger")

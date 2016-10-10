@@ -62,18 +62,19 @@
     }
     /* 触发器栏操作按钮 */
     function triggerOptFormatter(value,row,index){
-    	var html = '<button type="button" id="triggeer-cog'+index+'" class="btn btn-default btn-sm" title="修改">'
+    	var btindex = index+""+row.index;
+    	var html = '<button type="button" id="triggeer-cog'+btindex+'" class="btn btn-default btn-sm" title="修改">'
 			        + '<i class="glyphicon glyphicon-cog"></i>'
 		         + '</button>'
-		         + '<button type="button" id="triggeer-trash'+index+'" class="btn btn-default btn-sm" title="删除触发器">'
+		         + '<button type="button" id="triggeer-trash'+btindex+'" class="btn btn-default btn-sm" title="删除触发器">'
 		            + '<i class="glyphicon glyphicon-trash"></i>'
 		         + '</button>';
-    	$("#table").off("click","#triggeer-cog"+index);
-        $("#table").on("click","#triggeer-trash"+index,row,function(event){
+    	$("#table").off("click","#triggeer-cog"+btindex);
+        $("#table").on("click","#triggeer-cog"+btindex,row,function(event){
         	triggeerCog(row);
         });
-        $("#table").off("click","#triggeer-trash"+index);
-        $("#table").on("click","#triggeer-trash"+index,row,function(event){
+        $("#table").off("click","#triggeer-trash"+btindex);
+        $("#table").on("click","#triggeer-trash"+btindex,row,function(event){
         	triggeerTrash(row);
         });
         return html;
@@ -97,15 +98,18 @@
                                +'<th data-field="state">状态</th>'
                                +'<th data-field="previousFireTime">上次触发时间</th>'
                                +'<th data-field="nextFireTime">下次触发时间</th>'
-                               +'<th data-field="jobData" data-formatter="triggerOptFormatter">操作</th>'
+                               +'<th data-field="operate" data-formatter="triggerOptFormatter">操作</th>'
                             +'</tr>'
                           +'</thead>'
                        +'</table>'
         
         var cur_table = $detail.html(tableHtml).find('table');
-                       
+        /* 给子表row增加两个父表属性 */
         $.map(row.triggerBeans,function(item){
-            return item.jobName = row.jobName
+        	item.index = index;
+            item.jobName = row.name;
+            item.jobGroup = row.group;
+            return item;
         })
         
         $(cur_table).bootstrapTable({
@@ -160,6 +164,28 @@
         });    
     }
     
+    /* 修改触发器 */
+    function editTrigger(){
+        var parameter = {jobName: $("#edit-job-name").val(),
+                jobGroup: $("#edit-job-group").val(),
+                triggerName: $("#edit-trigger-name").val(),
+                triggerGroup: $("#edit-trigger-group").val(),
+                priority: $("#edit-trigger-priority").val(),
+                cronExpression: $("#edit-trigger-cronExpression").val(),
+                description: $("#edit-trigger-description").val()
+           };
+        $.ajax({
+           type: "POST",
+           url: "rescheduleJob",
+           contentType: "application/json;charset=UTF-8",
+           data: JSON.stringify(parameter),
+           success: function (date, status){
+               $('#editTriggerModal').modal('hide')
+               $("#table").bootstrapTable('refresh');
+           }
+        });    
+    }
+    /* 修改任务 */
     function modifyJob(){
         var parameter = {name: $("#edit-name").val(),
                 group: $("#edit-group").val(),
@@ -250,7 +276,7 @@
             });
         }
     }
-    /* 修改任务 */
+    /* 修改任务模态框 */
     function config(row){
         $("#edit-name").val(row.name);
         $("#edit-group").val(row.group);
@@ -273,6 +299,19 @@
         $("#triggerModal").modal('show');
     }
     
+    /* 修改触发器模态框 */
+    function triggeerCog(row){
+    	$("#edit-job-name").val(row.jobName);
+    	$("#edit-job-group").val(row.jobGroup);
+    	$("#edit-trigger-name").val(row.triggerName);
+    	$("#edit-trigger-group").val(row.triggerGroup);
+    	$("#edit-trigger-cronExpression").val(row.cronExpression);
+    	$("#edit-trigger-priority").val(row.priority);
+    	$("#edit-trigger-description").val(row.description);
+    	$("#editTriggerModal").modal('show');
+    }
+    
+    /* 删除触发器 */
     function triggeerTrash(row){
     	if(confirm("删除触发器："+row.triggerName+",确定吗？")){
             var parameter = {triggerName: row.triggerName,
@@ -575,6 +614,49 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-primary" onclick="addTrigger()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 修改触发器 -->
+    <div class="modal fade bs-example-modal-sm" id="editTriggerModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="mySmallModalLabel">修改触发器</h4>
+          </div>
+          <div class="modal-body">
+              <form class="form-horizontal" role="form">
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                        <input type="hidden" class="form-control" id="edit-job-name" >
+                        <input type="hidden" class="form-control" id="edit-job-group" >
+                        <input type="hidden" class="form-control" id="edit-trigger-group" >
+                        <input type="text" class="form-control" id="edit-trigger-name" placeholder="触发器名" readonly >
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <input type="text" class="form-control" id="edit-trigger-cronExpression" placeholder="cron表达式" >
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <input type="text" class="form-control" id="edit-trigger-priority" placeholder="优先级（默认5）" >
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <input type="text" class="form-control" id="edit-trigger-description" placeholder="描述" >
+                    </div>
+                  </div>
+              </form>
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="editTrigger()">Save Change</button>
           </div>
         </div>
       </div>

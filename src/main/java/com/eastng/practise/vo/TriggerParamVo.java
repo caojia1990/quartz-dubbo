@@ -1,6 +1,6 @@
 package com.eastng.practise.vo;
 
-public class AddTriggerParamVo {
+public class TriggerParamVo {
     
 private String jobName;
     
