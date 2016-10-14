@@ -7,9 +7,8 @@ public class HelloServiceImpl implements HelloService{
 	static private Logger logger = Logger.getLogger(HelloServiceImpl.class);
 	
 	@Override
-	public void sayHello(){
-		logger.info("Hello World !");
-		
+	public void sayHello(String name){
+		logger.info("Hello World ! "+name);
 	}
 
 }

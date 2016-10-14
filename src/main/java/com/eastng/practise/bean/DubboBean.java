@@ -22,6 +22,10 @@ public class DubboBean implements Serializable{
     private String parameterType;
     
     private String parameterValue;
+    
+    private Integer timeout;
+    
+    private String version;
 
     public String getAddress() {
         return address;
@@ -78,7 +82,22 @@ public class DubboBean implements Serializable{
     public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
-    
+
+	public Integer getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(Integer timeout) {
+		this.timeout = timeout;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
     
 
 }

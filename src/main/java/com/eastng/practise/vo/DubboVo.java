@@ -12,9 +12,11 @@ public class DubboVo {
     
     private String methodName;
     
-    private String parameterType;
+    private ParamVo paramVo;
     
-    private String parameterValue;
+    private Integer timeout;
+    
+    private String version;
 
     public String getAddress() {
         return address;
@@ -56,21 +58,28 @@ public class DubboVo {
         this.methodName = methodName;
     }
 
-    public String getParameterType() {
-        return parameterType;
-    }
+	public ParamVo getParamVo() {
+		return paramVo;
+	}
 
-    public void setParameterType(String parameterType) {
-        this.parameterType = parameterType;
-    }
+	public void setParamVo(ParamVo paramVo) {
+		this.paramVo = paramVo;
+	}
 
-    public String getParameterValue() {
-        return parameterValue;
-    }
+	public Integer getTimeout() {
+		return timeout;
+	}
 
-    public void setParameterValue(String parameterValue) {
-        this.parameterValue = parameterValue;
-    }
-    
+	public void setTimeout(Integer timeout) {
+		this.timeout = timeout;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
     
 }

@@ -11,27 +11,31 @@ import com.eastng.practise.bean.DubboBean;
 @Service("dubboService")
 public class DubboServiceFactory {
 
-	public void invoke(DubboBean bean){
-		
-		ApplicationConfig application = new ApplicationConfig();
-		application.setName("test");
-		
-		RegistryConfig registry = new RegistryConfig();
-		registry.setAddress(bean.getAddress());
-		registry.setPort(bean.getPort());
-		registry.setProtocol(bean.getProtocol());
-		
-		ReferenceConfig<GenericService> reference = new ReferenceConfig
-				<GenericService>();
-		
-		reference.setApplication(application);
-		reference.setRegistry(registry);
-		reference.setGeneric(true);
-		reference.setInterface(bean.getInterfaceName());
-		
-		GenericService genericService = reference.get();
-		
-		genericService.$invoke(bean.getMethodName(), null, null);
-	}
-	
+    public void invoke(DubboBean bean){
+        
+        ApplicationConfig application = new ApplicationConfig();
+        application.setName("test");
+        
+        RegistryConfig registry = new RegistryConfig();
+        registry.setAddress(bean.getAddress());
+        registry.setPort(bean.getPort());
+        registry.setProtocol(bean.getProtocol());
+        
+        ReferenceConfig<GenericService> reference = new ReferenceConfig
+                <GenericService>();
+        
+        reference.setApplication(application);
+        reference.setRegistry(registry);
+        reference.setGeneric(true);
+        reference.setInterface(bean.getInterfaceName());
+        reference.setTimeout(bean.getTimeout());
+        reference.setVersion(bean.getVersion());
+        
+        GenericService genericService = reference.get();
+        
+        genericService.$invoke(bean.getMethodName(), null, null);
+        
+        reference.destroy();
+    }
+    
 }
