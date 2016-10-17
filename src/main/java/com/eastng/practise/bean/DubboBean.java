@@ -19,9 +19,9 @@ public class DubboBean implements Serializable{
     
     private String methodName;
     
-    private String parameterType;
+    private String[] parameterType;
     
-    private String parameterValue;
+    private Object[] parameterValue;
     
     private Integer timeout;
     
@@ -59,19 +59,19 @@ public class DubboBean implements Serializable{
         this.methodName = methodName;
     }
 
-    public String getParameterType() {
+    public String[] getParameterType() {
         return parameterType;
     }
 
-    public void setParameterType(String parameterType) {
+    public void setParameterType(String[] parameterType) {
         this.parameterType = parameterType;
     }
 
-    public String getParameterValue() {
+    public Object[] getParameterValue() {
         return parameterValue;
     }
 
-    public void setParameterValue(String parameterValue) {
+    public void setParameterValue(Object[] parameterValue) {
         this.parameterValue = parameterValue;
     }
 

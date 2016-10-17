@@ -33,7 +33,7 @@ public class DubboServiceFactory {
         
         GenericService genericService = reference.get();
         
-        genericService.$invoke(bean.getMethodName(), null, null);
+        genericService.$invoke(bean.getMethodName(), bean.getParameterType(), bean.getParameterValue());
         
         reference.destroy();
     }

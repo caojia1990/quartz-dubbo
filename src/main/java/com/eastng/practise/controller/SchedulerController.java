@@ -1,5 +1,6 @@
 package com.eastng.practise.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -7,12 +8,14 @@ import org.quartz.SchedulerException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.eastng.practise.bean.DubboBean;
 import com.eastng.practise.bean.JobBean;
 import com.eastng.practise.bean.SimpleJobBean;
@@ -21,6 +24,7 @@ import com.eastng.practise.quartz.scheduler.JobScheduleService;
 import com.eastng.practise.vo.TriggerParamVo;
 import com.eastng.practise.vo.DubboVo;
 import com.eastng.practise.vo.JobVo;
+import com.eastng.practise.vo.ParamVo;
 
 @Controller
 public class SchedulerController {
@@ -38,12 +42,31 @@ public class SchedulerController {
     
     @RequestMapping(value="addJob")
     @ResponseBody
-    public void addJob(@RequestBody JobVo parameterVo) throws SchedulerException{
+    public void addJob(@RequestBody JobVo parameterVo) throws SchedulerException, ClassNotFoundException{
     	logger.info("创建任务入参：" + JSON.toJSONString(parameterVo));
         
     	DubboVo dubboVo = parameterVo.getJobData();
+    	
     	DubboBean dubboBean = new DubboBean();
     	BeanUtils.copyProperties(dubboVo, dubboBean);
+    	
+    	//封装dubbo接口参数
+    	String paramStr = parameterVo.getParams();
+    	if(!StringUtils.isEmpty(paramStr)){
+    		JSONArray jsonArray = JSON.parseArray(paramStr);
+    		
+    		List<String> typeList = new ArrayList<String>();
+    		List<Object> valueList = new ArrayList<Object>();
+    		for (Object jsonObject : jsonArray) {
+    			ParamVo paramVo = (ParamVo) JSON.parseObject(jsonObject.toString(),ParamVo.class);
+    			Class<?> clazz = Class.forName(paramVo.getParamType());
+    			Object o = JSON.parseObject(paramVo.getParamValue(), clazz);
+    			typeList.add(paramVo.getParamType());
+    			valueList.add(o);
+    		}
+    		dubboBean.setParameterType(typeList.toArray(new String[0]));
+    		dubboBean.setParameterValue(valueList.toArray());
+    	}
     	
         SimpleJobBean jobBean = new SimpleJobBean();
         BeanUtils.copyProperties(parameterVo, jobBean);

@@ -1,5 +1,7 @@
 package com.eastng.practise.vo;
 
+import java.util.List;
+
 public class JobVo {
     
     private String name;
@@ -11,6 +13,8 @@ public class JobVo {
     private boolean replace;
     
     private DubboVo jobData;
+    
+    private String params;
 
     public String getName() {
         return name;
@@ -52,5 +56,12 @@ public class JobVo {
 		this.jobData = jobData;
 	}
 
-    
+	public String getParams() {
+		return params;
+	}
+
+	public void setParams(String params) {
+		this.params = params;
+	}
+
 }

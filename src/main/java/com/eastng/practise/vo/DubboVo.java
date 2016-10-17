@@ -12,8 +12,6 @@ public class DubboVo {
     
     private String methodName;
     
-    private ParamVo paramVo;
-    
     private Integer timeout;
     
     private String version;
@@ -57,14 +55,6 @@ public class DubboVo {
     public void setMethodName(String methodName) {
         this.methodName = methodName;
     }
-
-	public ParamVo getParamVo() {
-		return paramVo;
-	}
-
-	public void setParamVo(ParamVo paramVo) {
-		this.paramVo = paramVo;
-	}
 
 	public Integer getTimeout() {
 		return timeout;

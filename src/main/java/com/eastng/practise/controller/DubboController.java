@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.eastng.practise.vo.ParamVo;
 
 @Controller
@@ -16,7 +17,7 @@ public class DubboController {
     
     @RequestMapping(value="getParameter")
     @ResponseBody
-    public List<ParamVo> getParamByInterfaceNameAndMethodName(String interfaceName,
+    public String getParamByInterfaceNameAndMethodName(String interfaceName,
                 String methodName) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException{
         
         Class<?> clazz = Class.forName(interfaceName);
@@ -32,14 +33,14 @@ public class DubboController {
                 for (Class<?> class1 : classes) {
                     ParamVo paramVo = new ParamVo();
                     paramVo.setParamType(class1.getName());
-                    paramVo.setParamValue(JSON.toJSONString(class1.newInstance()));
+                    paramVo.setParamValue(JSON.toJSONString(class1.newInstance(),SerializerFeature.WriteMapNullValue));
                     list.add(paramVo);
                 }
                 break;
             }
         }
         
-        return list;
+        return JSON.toJSONString(list);
     }
 
 }
