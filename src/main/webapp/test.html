@@ -62,20 +62,20 @@
     }
     /* 触发器栏操作按钮 */
     function triggerOptFormatter(value,row,index){
-    	var btindex = index+""+row.index;
-    	var html = '<button type="button" id="triggeer-cog'+btindex+'" class="btn btn-default btn-sm" title="修改">'
-			        + '<i class="glyphicon glyphicon-cog"></i>'
-		         + '</button>'
-		         + '<button type="button" id="triggeer-trash'+btindex+'" class="btn btn-default btn-sm" title="删除触发器">'
-		            + '<i class="glyphicon glyphicon-trash"></i>'
-		         + '</button>';
-    	$("#table").off("click","#triggeer-cog"+btindex);
+        var btindex = index+""+row.index;
+        var html = '<button type="button" id="triggeer-cog'+btindex+'" class="btn btn-default btn-sm" title="修改">'
+                    + '<i class="glyphicon glyphicon-cog"></i>'
+                 + '</button>'
+                 + '<button type="button" id="triggeer-trash'+btindex+'" class="btn btn-default btn-sm" title="删除触发器">'
+                    + '<i class="glyphicon glyphicon-trash"></i>'
+                 + '</button>';
+        $("#table").off("click","#triggeer-cog"+btindex);
         $("#table").on("click","#triggeer-cog"+btindex,row,function(event){
-        	triggeerCog(row);
+            triggeerCog(row);
         });
         $("#table").off("click","#triggeer-trash"+btindex);
         $("#table").on("click","#triggeer-trash"+btindex,row,function(event){
-        	triggeerTrash(row);
+            triggeerTrash(row);
         });
         return html;
     }
@@ -106,7 +106,7 @@
         var cur_table = $detail.html(tableHtml).find('table');
         /* 给子表row增加两个父表属性 */
         $.map(row.triggerBeans,function(item){
-        	item.index = index;
+            item.index = index;
             item.jobName = row.name;
             item.jobGroup = row.group;
             return item;
@@ -119,6 +119,14 @@
     
     /* 创建任务 */
     function savejob(){
+    	var labels = $("[name='paramLabel']").serializeArray();
+    	var fields = $("[name='parameter']").serializeArray();
+    	var paramList = [];
+    	$.each(labels,function(index,field){
+    		var param = {paramType:field.value,paramValue:fields[index].value};
+    		paramList[index] = param;
+    	});
+    	
         var parameter = {name: $("#name").val(),
                          group: $("#group").val(),
                          description: $("#description").val(),
@@ -130,7 +138,7 @@
                                    version: $("#version").val(),
                                    timeout: $("#timeout").val()
                                   },
-                         params:$("#parameter").val()
+                         params:paramList
                     };
         $.ajax({
             type: "POST",
@@ -302,21 +310,21 @@
     
     /* 修改触发器模态框 */
     function triggeerCog(row){
-    	$("#edit-job-name").val(row.jobName);
-    	$("#edit-job-group").val(row.jobGroup);
-    	$("#edit-trigger-name").val(row.triggerName);
-    	$("#edit-trigger-group").val(row.triggerGroup);
-    	$("#edit-trigger-cronExpression").val(row.cronExpression);
-    	$("#edit-trigger-priority").val(row.priority);
-    	$("#edit-trigger-description").val(row.description);
-    	$("#editTriggerModal").modal('show');
+        $("#edit-job-name").val(row.jobName);
+        $("#edit-job-group").val(row.jobGroup);
+        $("#edit-trigger-name").val(row.triggerName);
+        $("#edit-trigger-group").val(row.triggerGroup);
+        $("#edit-trigger-cronExpression").val(row.cronExpression);
+        $("#edit-trigger-priority").val(row.priority);
+        $("#edit-trigger-description").val(row.description);
+        $("#editTriggerModal").modal('show');
     }
     
     /* 删除触发器 */
     function triggeerTrash(row){
-    	if(confirm("删除触发器："+row.triggerName+",确定吗？")){
+        if(confirm("删除触发器："+row.triggerName+",确定吗？")){
             var parameter = {triggerName: row.triggerName,
-            		         triggerGroup: row.triggerGroup};
+                             triggerGroup: row.triggerGroup};
             $.ajax({
                 type: "POST",
                 url: "removeTrigger",
@@ -331,19 +339,29 @@
     
     $(function(){
         $("#methodName").on("blur",function(){
-        	var interfaceName = $("#interfaceName").val();
+            var interfaceName = $("#interfaceName").val();
             var methodName = $("#methodName").val();
             var parameter = {interfaceName: $("#interfaceName").val(),
-            		methodName: $("#methodName").val()};
-		   $.ajax({
-		       type: "POST",
-		       url: "getParameter",
-		       //contentType: "application/json;charset=UTF-8",
-		       data: parameter,
-		       success: function (date, status){
-		           $("#parameter").val(date);
-		       }
-		   });
+                    methodName: $("#methodName").val()};
+           $.ajax({
+               type: "POST",
+               url: "getParameter",
+               //contentType: "application/json;charset=UTF-8",
+               data: parameter,
+               success: function (data, status){
+            	   var input = "";
+            	   for(i=0;i<data.length;i++){
+            		    input += '<div class="form-group">'
+					                 +'<input type="text" name="paramLabel" class="col-sm-5 control-label" style="outline:none; border:none;" value="'+data[i].paramType+'" readonly></input>'
+					                  +'<div class="col-sm-7">'
+					                    +'<textarea class="form-control" name="parameter" rows="1"></textarea>'
+					                  +'</div>'
+					                 +'</div>';
+            		    $("#paramList").html(input);
+            	   }
+                   alert(data);
+               }
+           });
         })
     })
     
@@ -487,18 +505,19 @@
                       <input type="text" class="form-control" id="interfaceName" placeholder="例：com.example.package.interface">
                     </div>
                   </div>
-                  <div class="form-group">
+                  <div class="form-group" id="methodDiv">
                     <label for="methodName" class="col-sm-2 control-label">方法名</label>
                     <div class="col-sm-10">
                       <input type="text" class="form-control" id="methodName" placeholder="例：sayhello">
                     </div>
                   </div>
-                  <div class="form-group">
-                    <label for="parameter" class="col-sm-2 control-label">参数</label>
-                    <div class="col-sm-10">
-                      <textarea class="form-control" id="parameter" rows="3"></textarea>
+                  <div id="paramList"></div>
+                  <!-- <div class="form-group">
+                    <label for="parameter" class="col-sm-4 control-label">参数</label>
+                    <div class="col-sm-8">
+                      <textarea class="form-control" id="parameter" rows="1"></textarea>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="form-group">
                     <label for="version" class="col-sm-2 control-label">版本</label>
                     <div class="col-sm-4">

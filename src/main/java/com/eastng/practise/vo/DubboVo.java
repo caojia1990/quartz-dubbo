@@ -1,5 +1,7 @@
 package com.eastng.practise.vo;
 
+import java.util.List;
+
 public class DubboVo {
 
 	private String address;
@@ -15,6 +17,7 @@ public class DubboVo {
     private Integer timeout;
     
     private String version;
+    
 
     public String getAddress() {
         return address;
@@ -71,5 +74,5 @@ public class DubboVo {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-    
+
 }

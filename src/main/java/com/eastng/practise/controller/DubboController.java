@@ -2,6 +2,7 @@ package com.eastng.practise.controller;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,7 @@ public class DubboController {
     
     @RequestMapping(value="getParameter")
     @ResponseBody
-    public String getParamByInterfaceNameAndMethodName(String interfaceName,
+    public List<ParamVo> getParamByInterfaceNameAndMethodName(String interfaceName,
                 String methodName) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException{
         
         Class<?> clazz = Class.forName(interfaceName);
@@ -33,14 +34,13 @@ public class DubboController {
                 for (Class<?> class1 : classes) {
                     ParamVo paramVo = new ParamVo();
                     paramVo.setParamType(class1.getName());
-                    paramVo.setParamValue(JSON.toJSONString(class1.newInstance(),SerializerFeature.WriteMapNullValue));
                     list.add(paramVo);
                 }
                 break;
             }
         }
         
-        return JSON.toJSONString(list);
+        return list;
     }
 
 }

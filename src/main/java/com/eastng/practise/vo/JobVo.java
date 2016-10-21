@@ -14,7 +14,9 @@ public class JobVo {
     
     private DubboVo jobData;
     
-    private String params;
+    private List<ParamVo> params;
+    
+    //private String params;
 
     public String getName() {
         return name;
@@ -56,12 +58,13 @@ public class JobVo {
 		this.jobData = jobData;
 	}
 
-	public String getParams() {
+	public List<ParamVo> getParams() {
 		return params;
 	}
 
-	public void setParams(String params) {
+	public void setParams(List<ParamVo> params) {
 		this.params = params;
 	}
+
 
 }

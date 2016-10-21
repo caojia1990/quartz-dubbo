@@ -51,7 +51,7 @@ public class SchedulerController {
     	BeanUtils.copyProperties(dubboVo, dubboBean);
     	
     	//封装dubbo接口参数
-    	String paramStr = parameterVo.getParams();
+    	/*String paramStr = parameterVo.getParams();
     	if(!StringUtils.isEmpty(paramStr)){
     		JSONArray jsonArray = JSON.parseArray(paramStr);
     		
@@ -66,7 +66,7 @@ public class SchedulerController {
     		}
     		dubboBean.setParameterType(typeList.toArray(new String[0]));
     		dubboBean.setParameterValue(valueList.toArray());
-    	}
+    	}*/
     	
         SimpleJobBean jobBean = new SimpleJobBean();
         BeanUtils.copyProperties(parameterVo, jobBean);
