@@ -15,16 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.eastng.practise.bean.DubboBean;
 import com.eastng.practise.bean.JobBean;
 import com.eastng.practise.bean.SimpleJobBean;
 import com.eastng.practise.bean.SimpleTriggerBean;
 import com.eastng.practise.quartz.scheduler.JobScheduleService;
-import com.eastng.practise.vo.TriggerParamVo;
 import com.eastng.practise.vo.DubboVo;
 import com.eastng.practise.vo.JobVo;
 import com.eastng.practise.vo.ParamVo;
+import com.eastng.practise.vo.TriggerParamVo;
 
 @Controller
 public class SchedulerController {
@@ -50,24 +49,31 @@ public class SchedulerController {
     	DubboBean dubboBean = new DubboBean();
     	BeanUtils.copyProperties(dubboVo, dubboBean);
     	
-    	//封装dubbo接口参数
-    	/*String paramStr = parameterVo.getParams();
-    	if(!StringUtils.isEmpty(paramStr)){
-    		JSONArray jsonArray = JSON.parseArray(paramStr);
-    		
-    		List<String> typeList = new ArrayList<String>();
-    		List<Object> valueList = new ArrayList<Object>();
-    		for (Object jsonObject : jsonArray) {
-    			ParamVo paramVo = (ParamVo) JSON.parseObject(jsonObject.toString(),ParamVo.class);
-    			Class<?> clazz = Class.forName(paramVo.getParamType());
-    			Object o = JSON.parseObject(paramVo.getParamValue(), clazz);
-    			typeList.add(paramVo.getParamType());
-    			valueList.add(o);
-    		}
-    		dubboBean.setParameterType(typeList.toArray(new String[0]));
-    		dubboBean.setParameterValue(valueList.toArray());
-    	}*/
-    	
+    	/**
+         * 处理参数列表
+         */
+        List<ParamVo> paramList = parameterVo.getParams();
+        if(paramList != null){
+            List<String> typeList = new ArrayList<String>();
+            List<Object> valueList = new ArrayList<Object>(); 
+            for (ParamVo paramVo : paramList) {
+                typeList.add(paramVo.getParamType());
+                Class<?> clazz = Class.forName(paramVo.getParamType());
+                if(!StringUtils.isEmpty(paramVo.getParamValue())){
+                    if(paramVo.getParamType().equalsIgnoreCase("java.lang.String")){
+                        valueList.add(paramVo.getParamValue());
+                    }else {
+                        Object o = JSON.parseObject(paramVo.getParamValue(), clazz);
+                        valueList.add(o);
+                    }
+                }else {
+                    valueList.add(null);
+                }
+            }
+            dubboBean.setParameterType(typeList.toArray(new String[0]));
+            dubboBean.setParameterValue(valueList.toArray());
+        }
+        
         SimpleJobBean jobBean = new SimpleJobBean();
         BeanUtils.copyProperties(parameterVo, jobBean);
         jobBean.setJobData(dubboBean);

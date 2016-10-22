@@ -8,6 +8,14 @@
   <name>eastng-practise Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <dependencies>
+  
+    
+    
+    <dependency>
+        <groupId>com.eastng.football</groupId>
+		  <artifactId>eastng-football-api</artifactId>
+		  <version>0.0.1-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

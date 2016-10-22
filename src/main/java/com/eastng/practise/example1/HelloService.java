@@ -1,10 +1,10 @@
 package com.eastng.practise.example1;
 
-import com.eastng.practise.vo.DubboVo;
+import com.eastng.practise.bean.DubboBean;
 
 public interface HelloService {
 	
 	
-	public void sayHello(String name,DubboVo vo);
+	public void sayHello(String name,DubboBean bean,String s);
 
 }

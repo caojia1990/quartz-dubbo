@@ -27,6 +27,7 @@ public class DubboServiceFactory {
         reference.setApplication(application);
         reference.setRegistry(registry);
         reference.setGeneric(true);
+        reference.setRetries(0);
         reference.setInterface(bean.getInterfaceName());
         reference.setTimeout(bean.getTimeout());
         reference.setVersion(bean.getVersion());

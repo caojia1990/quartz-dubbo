@@ -119,14 +119,14 @@
     
     /* 创建任务 */
     function savejob(){
-    	var labels = $("[name='paramLabel']").serializeArray();
-    	var fields = $("[name='parameter']").serializeArray();
-    	var paramList = [];
-    	$.each(labels,function(index,field){
-    		var param = {paramType:field.value,paramValue:fields[index].value};
-    		paramList[index] = param;
-    	});
-    	
+        var labels = $("[name='paramLabel']").serializeArray();
+        var fields = $("[name='parameter']").serializeArray();
+        var paramList = [];
+        $.each(labels,function(index,field){
+            var param = {paramType:field.value,paramValue:fields[index].value};
+            paramList[index] = param;
+        });
+        
         var parameter = {name: $("#name").val(),
                          group: $("#group").val(),
                          description: $("#description").val(),
@@ -287,6 +287,7 @@
     }
     /* 修改任务模态框 */
     function config(row){
+        $("#edit-paramList").html("");
         $("#edit-name").val(row.name);
         $("#edit-group").val(row.group);
         $("#edit-description").val(row.description);
@@ -298,6 +299,24 @@
             $("#edit-methodName").val(row.jobData.methodName);
             $("#edit-version").val(row.jobData.version);
             $("#edit-timeout").val(row.jobData.timeout);
+            if(row.jobData.parameterType != null){
+                var html = "";
+                var paramList = row.jobData.parameterType;
+                var valueList = row.jobData.parameterValue;
+                for(i=0 ; i<paramList.length ;i++){
+                    var value = valueList[i];
+                    if(typeof(value)=="object"){
+                        value = JSON.stringify(value);
+                    }
+                    html +='<div class="form-group">'
+                            +'<input type="text" name="editParamLabel" class="col-sm-5 control-label" style="outline:none; border:none;" value="'+paramList[i]+'" readonly></input>'
+                            +'<div class="col-sm-7">'
+                              +'<textarea class="form-control" name="editParameter" rows="1" >'+value+'</textarea>'
+                            +'</div>'
+                           +'</div>';
+                }
+                $("#edit-paramList").html(html);
+            }
         }
         $("#editModal").modal('show');
     }
@@ -349,16 +368,16 @@
                //contentType: "application/json;charset=UTF-8",
                data: parameter,
                success: function (data, status){
-            	   var input = "";
-            	   for(i=0;i<data.length;i++){
-            		    input += '<div class="form-group">'
-					                 +'<input type="text" name="paramLabel" class="col-sm-5 control-label" style="outline:none; border:none;" value="'+data[i].paramType+'" readonly></input>'
-					                  +'<div class="col-sm-7">'
-					                    +'<textarea class="form-control" name="parameter" rows="1"></textarea>'
-					                  +'</div>'
-					                 +'</div>';
-            		    $("#paramList").html(input);
-            	   }
+                   var input = "";
+                   for(i=0;i<data.length;i++){
+                        input += '<div class="form-group">'
+                                     +'<input type="text" name="paramLabel" class="col-sm-5 control-label" style="outline:none; border:none;" value="'+data[i].paramType+'" readonly></input>'
+                                      +'<div class="col-sm-7">'
+                                        +'<textarea class="form-control" name="parameter" rows="1"></textarea>'
+                                      +'</div>'
+                                     +'</div>';
+                        $("#paramList").html(input);
+                   }
                    alert(data);
                }
            });
@@ -596,12 +615,7 @@
                       <input type="text" class="form-control" id="edit-methodName" placeholder="例：sayhello">
                     </div>
                   </div>
-                  <div class="form-group">
-                    <label for="edit-parameter" class="col-sm-2 control-label">参数</label>
-                    <div class="col-sm-10">
-                      <textarea class="form-control" id="edit-parameter" rows="3"></textarea>
-                    </div>
-                  </div>
+                  <div id="edit-paramList"></div>
                   <div class="form-group">
                     <label for="edit-version" class="col-sm-2 control-label">版本</label>
                     <div class="col-sm-4">
