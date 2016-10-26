@@ -196,10 +196,19 @@
     }
     /* 修改任务 */
     function modifyJob(){
+    	
+    	var labels = $("[name='editParamLabel']").serializeArray();
+        var fields = $("[name='editParameter']").serializeArray();
+        var paramList = [];
+        $.each(labels,function(index,field){
+            var param = {paramType:field.value,paramValue:fields[index].value};
+            paramList[index] = param;
+        });
         var parameter = {name: $("#edit-name").val(),
                 group: $("#edit-group").val(),
                 description: $("#edit-description").val(),
                 replace: true,
+                params:paramList,
                 jobData: {protocol: $("#edit-protocol").val(),
                           address: $("#edit-address").val(),
                           port: $("#edit-port").val(),
