@@ -14,6 +14,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,20 +63,24 @@ public class JobScheduleService {
                 jobBean.setJobData((DubboBean) jobDetail.getJobDataMap()
                         .get(CommonJobBean.JOB_DATA_KEY));
                 
-                List<CronTrigger> list = (List<CronTrigger>) scheduler
+                List<Trigger> list = (List<Trigger>) scheduler
                         .getTriggersOfJob(jobKey);
                 
                 List<TriggerBean> triggerBeans = new ArrayList<TriggerBean>();
-                for(CronTrigger trigger : list){
+                for(Trigger trigger : list){
                     TriggerBean bean = new TriggerBean();
                     bean.setTriggerName(trigger.getKey().getName());
                     bean.setTriggerGroup(trigger.getKey().getGroup());
                     bean.setDescription(trigger.getDescription());
                     bean.setPriority(trigger.getPriority());
-                    bean.setCronExpression(trigger.getCronExpression());
                     bean.setNextFireTime(trigger.getNextFireTime());
                     bean.setPreviousFireTime(trigger.getPreviousFireTime());
                     bean.setState(this.scheduler.getTriggerState(trigger.getKey()));
+                    //如果是定时触发器
+                    if(trigger instanceof CronTrigger){
+                        CronTrigger cronTrigger = (CronTrigger) trigger;
+                        bean.setCronExpression(cronTrigger.getCronExpression());
+                    }
                     triggerBeans.add(bean);
                 }
                 jobBean.setTriggerBeans(triggerBeans);
